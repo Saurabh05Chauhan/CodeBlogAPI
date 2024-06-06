@@ -1,8 +1,8 @@
-﻿namespace CodeBlogAPI.Models.Domains
+﻿namespace CodeBlogAPI.Models.DTO
 {
-    public class BlogPost
+    public class BlogPostDTO
     {
-        public Guid Id{ get; set; }
+        public Guid Id { get; set; }
         public string Title { get; set; }
         public string ShortDescription { get; set; }
         public string Content { get; set; }
@@ -12,6 +12,6 @@
         public string Author { get; set; }
         public bool IsVisible { get; set; }
 
-        public ICollection<Category> categories { get; set; }
+        public List<CategoryDTO> Categories { get; set; } = new List<CategoryDTO>();
     }
 }

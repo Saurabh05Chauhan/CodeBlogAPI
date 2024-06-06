@@ -1,6 +1,7 @@
 ﻿using CodeBlogAPI.Data;
 using CodeBlogAPI.Models.Domains;
 using CodeBlogAPI.Models.DTO;
+using CodeBlogAPI.Repository.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,11 @@ namespace CodeBlogAPI.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly ICategoryRepository _category;
 
-        public CategoriesController(ApplicationDbContext dbContext)
+        public CategoriesController(ICategoryRepository category)
         {
-            this.dbContext = dbContext;
+            this._category = category;
         }
 
         [HttpPost]
@@ -27,8 +28,7 @@ namespace CodeBlogAPI.Controllers
                 UrlHandle = request.UrlHandle,
             };
 
-            await dbContext.Categories.AddAsync(category);
-            await dbContext.SaveChangesAsync();
+           await _category.CreateCategoryAsync(category);
 
             var response = new CategoryDTO
             {
@@ -38,6 +38,85 @@ namespace CodeBlogAPI.Controllers
             };
 
             return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategoryAsync()
+        {
+            var listCategory=await _category.GetAllCategoryAsync();
+
+            var response= new List<CategoryDTO>();
+            foreach (var item in listCategory)
+            {
+                response.Add( new CategoryDTO
+
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    UrlHandle = item.UrlHandle,
+                });
+            }
+
+            return Ok(response);
+            
+        }
+
+        [HttpGet]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> GetCategoryById([FromRoute]Guid id)
+        {
+            var result=await _category.GetCategoryByIdAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(result);
+            }
+        }
+
+        [HttpPut]
+      
+        public async Task<IActionResult> EditCategory(EditCategoryDTO dTO)
+        {
+            var category = new Category
+            {
+                Id = dTO.Id,
+                Name = dTO.Name,
+                UrlHandle = dTO.UrlHandle,
+            };
+            var result = await _category.EditCategoryByIdAsync(category);
+
+            if (result==null)
+            {
+                return NotFound();
+            }
+
+            var response = new EditCategoryDTO
+            {
+                Id = result.Id,
+                Name = result.Name,
+                UrlHandle = result.UrlHandle,
+            };
+            
+                return Ok(response);
+           
+        }
+
+        [HttpDelete]
+       [ Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteCategory([FromRoute]Guid id)
+        {
+            var result =await _category.DeleteCategoryAsync(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok();
+            }
         }
     }
 }
