@@ -21,9 +21,43 @@ namespace CodeBlogAPI.Repository.Implementation
             return category;
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategoryAsync()
+        public async Task<IEnumerable<Category>> GetAllCategoryAsync(string? query=null, string? sortBy = null, string? sortDirection = null, int? pageNumber = 1, int? pageSize = 100)
         {
-            return await dbContext.Categories.ToListAsync();
+            //query the database
+            var categories=dbContext.Categories.AsQueryable();
+
+            //filtering
+            if (string.IsNullOrWhiteSpace(query) == false) {
+               categories = categories.Where(x => x.Name.Contains(query));
+
+            }
+
+
+            //sorting
+            if (string.IsNullOrWhiteSpace(sortBy) == false) 
+            {
+                if (string.Equals(sortBy,"Name",StringComparison.OrdinalIgnoreCase)) 
+                {
+                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase) ? true : false;
+
+                    categories=isAsc? categories.OrderBy(x => x.Name):categories.OrderByDescending(x=>x.Name);
+                }
+
+                if (string.Equals(sortBy, "URL", StringComparison.OrdinalIgnoreCase))
+                {
+                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase) ? true : false;
+
+                    categories = isAsc ? categories.OrderBy(x => x.UrlHandle) : categories.OrderByDescending(x => x.UrlHandle);
+                }
+            }
+
+
+            //pagination
+            var skipResult = (pageNumber - 1) * pageSize;
+            categories= categories.Skip(skipResult??0).Take(pageSize??100);
+
+
+            return await categories.ToListAsync();
 
         }
 
@@ -58,6 +92,11 @@ namespace CodeBlogAPI.Repository.Implementation
             }
 
             return false;
+        }
+
+        public async Task<int> GetCategoryCount()
+        {
+            return await dbContext.Categories.CountAsync();
         }
     }
 }

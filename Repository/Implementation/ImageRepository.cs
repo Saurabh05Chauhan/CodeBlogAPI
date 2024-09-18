@@ -1,6 +1,8 @@
 ﻿using CodeBlogAPI.Data;
 using CodeBlogAPI.Models.Domains;
 using CodeBlogAPI.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
 
 namespace CodeBlogAPI.Repository.Implementation
 {
@@ -16,6 +18,13 @@ namespace CodeBlogAPI.Repository.Implementation
             this.httpContextAccessor = httpContextAccessor;
             this.applicationDbContext = applicationDbContext;
         }
+
+        public async Task<IEnumerable<BlogImage>> GetAllImages()
+        {
+            return await applicationDbContext.BlogImages.ToListAsync();
+            
+        }
+
         public async Task<BlogImage> Upload(IFormFile file, BlogImage blogImage)
         {
             //upload the image to API/Images

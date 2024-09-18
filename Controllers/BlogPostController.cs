@@ -1,6 +1,8 @@
 ﻿using CodeBlogAPI.Models.Domains;
 using CodeBlogAPI.Models.DTO;
 using CodeBlogAPI.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +22,7 @@ namespace CodeBlogAPI.Controllers
             this.categoryRepository = categoryRepository;
         }
         [HttpPost]
-
+        [Authorize(Roles="Writer")]
         public async Task<IActionResult> AddBlogPost(CreateBlogPostDTO createBlogPost)
         {
             var req = new BlogPost
@@ -139,8 +141,41 @@ namespace CodeBlogAPI.Controllers
             }
             return NotFound();
         }
+        
+        [HttpGet]
+        [Route("{url}")]
+        public async Task<IActionResult> GetBlogByURL([FromRoute]string url)
+        {
+            var blogPost= await this.repository.GetBlogByURLAsync(url);
+            if(blogPost != null)
+            {
+                var res = new BlogPostDTO
+                {
+                    Id = blogPost.Id,
+                    Title = blogPost.Title,
+                    ShortDescription = blogPost.ShortDescription,
+                    Content = blogPost.Content,
+                    FeaturedImageURL = blogPost.FeaturedImageURL,
+                    UrlHandle = blogPost.UrlHandle,
+                    Author = blogPost.Author,
+                    PublishedDate = blogPost.PublishedDate,
+                    IsVisible = blogPost.IsVisible,
+                    Categories = blogPost.categories.Select(x => new CategoryDTO
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle
+                    }).ToList()
+
+                };
+
+                return Ok(res);
+            }
+            return NotFound();
+        }
 
         [HttpPut]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> EditBlogPost(editBlogPostDto blogPostDTO)
         {
             //convertBlogPost DTO to domain
@@ -201,6 +236,7 @@ namespace CodeBlogAPI.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteBlog([FromRoute] Guid id)
         {
             var result = await repository.DeleteBlog(id);

@@ -2,6 +2,7 @@
 using CodeBlogAPI.Models.Domains;
 using CodeBlogAPI.Models.DTO;
 using CodeBlogAPI.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,7 @@ namespace CodeBlogAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateCategory(CreateCategoryDTO request)
         {
             //create domain from dto
@@ -40,10 +42,16 @@ namespace CodeBlogAPI.Controllers
             return Ok(response);
         }
 
+        //https://localhost:xxxx/api/Categories?query=html&sortBy=name&sortDirection=desc
         [HttpGet]
-        public async Task<IActionResult> GetAllCategoryAsync()
+        public async Task<IActionResult> GetAllCategoryAsync(
+            [FromQuery] string? query,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection,
+            [FromQuery] int? pageNumber,
+            [FromQuery] int? pageSize)
         {
-            var listCategory=await _category.GetAllCategoryAsync();
+            var listCategory=await _category.GetAllCategoryAsync(query,sortBy,sortDirection,pageNumber,pageSize);
 
             var response= new List<CategoryDTO>();
             foreach (var item in listCategory)
@@ -77,7 +85,7 @@ namespace CodeBlogAPI.Controllers
         }
 
         [HttpPut]
-      
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> EditCategory(EditCategoryDTO dTO)
         {
             var category = new Category
@@ -106,6 +114,7 @@ namespace CodeBlogAPI.Controllers
 
         [HttpDelete]
        [ Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteCategory([FromRoute]Guid id)
         {
             var result =await _category.DeleteCategoryAsync(id);
@@ -117,6 +126,16 @@ namespace CodeBlogAPI.Controllers
             {
                 return Ok();
             }
+        }
+
+        //get api/categories/count
+        [HttpGet]
+        [Route("count")]
+        public async Task<IActionResult> GetCategoriesTotal()
+        {
+            int count = await this._category.GetCategoryCount();
+
+            return Ok(count);
         }
     }
 }

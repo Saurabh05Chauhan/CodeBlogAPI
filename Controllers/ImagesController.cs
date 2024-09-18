@@ -26,7 +26,7 @@ namespace CodeBlogAPI.Controllers
             {
                 var blogImage = new BlogImage
                 {
-                    FileExtension = Path.GetExtension(fileName).ToLower(),
+                    FileExtension = Path.GetExtension(file.FileName).ToLower(),
                     Title = title,
                     DateCreated = DateTime.Now,
                     FileName = fileName,
@@ -51,6 +51,28 @@ namespace CodeBlogAPI.Controllers
                 return Ok(result);
             }
             return BadRequest();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllImages()
+        {
+            var result= await this.imageRepository.GetAllImages();
+
+            var response= new List<BlogImageDTO>();
+            foreach (var res in result)
+            {
+                response.Add( new BlogImageDTO
+                {
+                    Id = res.Id,
+                    Url = res.Url,
+                    Title = res.Title,
+                    DateCreated = res.DateCreated,
+                    FileName = res.FileName,
+                    FileExtension = res.FileExtension,
+                });
+            }
+
+            return Ok(response);
         }
 
         private void ValidateFileUpload(IFormFile file)

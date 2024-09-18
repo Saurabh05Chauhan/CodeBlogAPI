@@ -31,6 +31,11 @@ namespace CodeBlogAPI.Repository.Implementation
             return await this._context.BlogPosts.Where(x=> x.Id==id).Include(x => x.categories).FirstOrDefaultAsync();
         }
 
+        public async Task<BlogPost?> GetBlogByURLAsync(string url)
+        {
+            return await this._context.BlogPosts.Where(x => x.UrlHandle.Equals(url)).Include(x => x.categories).FirstOrDefaultAsync();
+        }
+
         public async Task<BlogPost?> UpdateBlog(BlogPost blog)
         {
             var existingData = await _context.BlogPosts.Include(x=>x.categories).FirstOrDefaultAsync(c => c.Id == (Guid)(blog.Id));
