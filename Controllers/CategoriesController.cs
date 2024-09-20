@@ -137,5 +137,12 @@ namespace CodeBlogAPI.Controllers
 
             return Ok(count);
         }
+
+        [HttpOptions]
+        public async Task<IActionResult> Options()
+        {
+            Response.Headers.Add("Allow", "GET, POST, OPTIONS");
+            return Ok();
+        }
     }
 }
