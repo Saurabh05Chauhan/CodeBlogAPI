@@ -11,11 +11,11 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var imagesPath = Path.Combine(builder.Environment.WebRootPath, "Images");
-if (!Directory.Exists(imagesPath))
-{
-    Directory.CreateDirectory(imagesPath);
-}
+//var imagesPath = Path.Combine(builder.Environment.WebRootPath, "Images");
+//if (!Directory.Exists(imagesPath))
+//{
+//    Directory.CreateDirectory(imagesPath);
+//}
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
