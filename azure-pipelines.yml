@@ -28,17 +28,9 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
 
-# Archive the published output to a ZIP file
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'   # Path to the published files
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/s.zip'  # The ZIP file to be created
-    replaceExistingArchive: true
 
-# Publish the ZIP file as an artifact
+# Publish the contents of the artifact staging directory as artifacts
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/s.zip'  # Path to the ZIP file
-    ArtifactName: 'drop'                                      # Name of the artifact
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'  # Publish all files in the output directory
+    ArtifactName: 'drop' 
