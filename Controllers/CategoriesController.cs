@@ -20,7 +20,7 @@ namespace CodeBlogAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateCategory(CreateCategoryDTO request)
         {
             //create domain from dto
@@ -85,7 +85,7 @@ namespace CodeBlogAPI.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> EditCategory(EditCategoryDTO dTO)
         {
             var category = new Category
@@ -114,7 +114,7 @@ namespace CodeBlogAPI.Controllers
 
         [HttpDelete]
        [ Route("{id:Guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteCategory([FromRoute]Guid id)
         {
             var result =await _category.DeleteCategoryAsync(id);

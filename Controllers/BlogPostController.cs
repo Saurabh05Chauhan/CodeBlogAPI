@@ -22,7 +22,7 @@ namespace CodeBlogAPI.Controllers
             this.categoryRepository = categoryRepository;
         }
         [HttpPost]
-        [Authorize(Roles="Writer")]
+        //[Authorize(Roles="Writer")]
         public async Task<IActionResult> AddBlogPost(CreateBlogPostDTO createBlogPost)
         {
             var req = new BlogPost
@@ -175,7 +175,7 @@ namespace CodeBlogAPI.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> EditBlogPost(editBlogPostDto blogPostDTO)
         {
             //convertBlogPost DTO to domain
@@ -236,7 +236,7 @@ namespace CodeBlogAPI.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteBlog([FromRoute] Guid id)
         {
             var result = await repository.DeleteBlog(id);
